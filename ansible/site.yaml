@@ -1,0 +1,58 @@
+---
+- name: Configure Web Servers and Deploy App
+  hosts: web
+  become: true
+
+  vars:
+    php_packages:
+      - php
+      - php-mysqli
+      - php-pdo
+      - php-mbstring
+
+  tasks:
+    - name: Ensure base packages installed (Amazon Linux 2)
+      package:
+        name:
+          - httpd
+          - git
+          - mysql
+          - "{{ php_packages }}"
+        state: present
+
+    - name: Ensure Apache is running and enabled
+      service:
+        name: httpd
+        state: started
+        enabled: true
+
+    - name: Ensure repo checkout exists (latest main)
+      git:
+        repo: "{{ app_repo }}"
+        dest: /opt/app_repo
+        version: main
+        force: true
+
+    - name: Deploy selected app version to web root
+      copy:
+        src: "/opt/app_repo/{{ app_version_path }}/"
+        dest: "{{ deploy_dir }}/"
+        owner: apache
+        group: apache
+        mode: "0644"
+        remote_src: true
+
+    - name: Place DB connection check script (bonus)
+      template:
+        src: templates/db_check.php.j2
+        dest: "{{ deploy_dir }}/db_check.php"
+        owner: apache
+        group: apache
+        mode: "0644"
+
+    - name: Check TCP connectivity to RDS (3306)
+      wait_for:
+        host: "{{ rds_host }}"
+        port: 3306
+        timeout: 5
+        state: started
