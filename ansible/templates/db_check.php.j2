@@ -1,0 +1,18 @@
+<?php
+// ===== Rendered values from Ansible =====
+$host     = "{{ rds_host }}";
+$db       = "{{ rds_db }}";
+$user     = "{{ rds_user }}";
+$password = "{{ rds_password }}";
+// =======================================
+
+try {
+  $dsn = "mysql:host=$host;dbname=$db;charset=utf8mb4";
+  $pdo = new PDO($dsn, $user, $password, [
+    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+  ]);
+  echo "Database Connected Successfully";
+} catch (Exception $e) {
+  http_response_code(500);
+  echo "DB connection failed: " . $e->getMessage();
+}
