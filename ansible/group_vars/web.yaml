@@ -1,0 +1,11 @@
+# ===== INLINE VARIABLES (edit easily) =====
+app_repo: "https://github.com/nithyasree694/aws-capstone-exam.git"  # CHANGE_ME
+app_version_path: "app/v1"    # switch to app/v2 for upgrade
+deploy_dir: "/var/www/html"
+
+# RDS connectivity (from Terraform outputs)
+rds_host: "<<< YOUR_RDS_ENDPOINT >>>"  # e.g., streamline-mysql.xxxxxx.us-east-1.rds.amazonaws.com
+rds_db: "streamlinedb"
+rds_user: "stream_user"
+rds_password: "<<< STRONG_DB_PASSWORD >>>"
+# ==========================================
